@@ -1,70 +1,70 @@
-# Hit/Kill Sounds
+# 命中/击杀音效 (Hit/Kill Sounds)
 
-A Darktide mod that plays hit and kill sounds from various games when you damage or kill enemies.
+一个暗潮 (Darktide) MOD，可以在命中或击杀敌人时播放来自不同游戏的命中和击杀音效。
 
-## Features
+## 功能特点
 
-- **Hit Sounds**: Play different sounds when hitting enemies (normal hit vs weakspot hit)
-- **Kill Sounds**: Play different sounds when killing enemies (normal kill vs headshot kill)
-- **Random Selection**: Multiple sound variants for each type, randomly selected
-- **Sound Cooldown**: Prevents sound spam from fast-firing weapons
-- **Deduplication**: Prevents duplicate sounds in multiplayer mode
-- **DoT Support**: Optional hit sounds for damage-over-time effects (bleed, burn, etc.)
-- **Target Filtering**: Filter sounds to only play for specific enemy types (Elite, Special, Boss)
-- **Volume Control**: Adjust volume independently for hit and kill sounds (0-100)
-- **Multiplayer Support**: Works correctly in both single-player and multiplayer modes
+- **命中音效**：命中敌人时播放不同音效（普通命中 vs 弱点命中）
+- **击杀音效**：击杀敌人时播放不同音效（普通击杀 vs 爆头击杀）
+- **随机选择**：每种类型有多个音效变体，随机选择播放
+- **音效冷却**：防止快速射击武器导致音效过载
+- **去重机制**：在多人模式下防止重复播放音效
+- **DoT 支持**：可选的持续伤害命中音效（流血、燃烧等）
+- **目标过滤**：可设置音效仅对特定敌人类型生效（精英、专家、Boss）
+- **音量控制**：可独立调节命中和击杀音效音量（0-100）
+- **多人模式支持**：在单人模式和多人模式下均能正常工作
 
-## Supported Sound Sources
+## 支持的音效来源
 
-| Game | Normal Hit | Headshot Hit | Normal Kill | Headshot Kill |
-|------|------------|--------------|-------------|---------------|
-| Battlefield 1 | 5 variants | 5 variants | 1 | 1 |
-| Battlefield 2042 | 24 variants | 13 variants | 6 variants | 13 variants |
-| Battlefield 6 | 28 variants | 8 variants | 6 variants | 8 variants |
-| Battlefield V | 12 variants | 5 variants | 1 | 10 variants |
-| Call of Duty: Black Ops 6 | 2 variants | 1 | 1 | 3 variants |
-| Call of Duty: MW 2019 | 1 | 1 | 1 | 1 |
-| Call of Duty: MW 3 | 1 | 1 | 1 | 1 |
-| The Finals | 3 variants | 5 variants | 1 | 1 |
+| 游戏 | 普通命中 | 爆头命中 | 普通击杀 | 爆头击杀 |
+|------|----------|----------|----------|----------|
+| 战地 1 | 5 种变体 | 5 种变体 | 1 种 | 1 种 |
+| 战地 2042 | 24 种变体 | 13 种变体 | 6 种变体 | 13 种变体 |
+| 战地 6 | 28 种变体 | 8 种变体 | 6 种变体 | 8 种变体 |
+| 战地 V | 12 种变体 | 5 种变体 | 1 种 | 10 种变体 |
+| 使命召唤：黑色行动 6 | 2 种变体 | 1 种 | 1 种 | 3 种变体 |
+| 使命召唤：现代战争 2019 | 1 种 | 1 种 | 1 种 | 1 种 |
+| 使命召唤：现代战争 3 | 1 种 | 1 种 | 1 种 | 1 种 |
+| 糖豆人 | 3 种变体 | 5 种变体 | 1 种 | 1 种 |
 
-## How It Works
+## 工作原理
 
-This mod uses two different hooking strategies to capture attack events:
+本 MOD 使用两种不同的 Hook 策略来捕获攻击事件：
 
-1. **Damage.deal_damage Hook**: Captures local player's damage events directly
-2. **AttackReportManager Hook**: Captures attack events through the game's networking system, ensuring multiplayer compatibility
+1. **Damage.deal_damage Hook**：直接捕获本地玩家的伤害事件
+2. **AttackReportManager Hook**：通过游戏的网络系统捕获攻击事件，确保多人模式兼容性
 
-The mod processes attacks through the following flow:
-- Intercept damage events via hooks
-- Determine if it's a hit (normal/weakspot) or kill (normal/headshot)
-- Apply target filtering based on enemy type
-- Play the appropriate sound through an external audio player
+MOD 处理攻击的流程如下：
+- 通过 Hook 拦截伤害事件
+- 判断是命中（普通/弱点）还是击杀（普通/爆头）
+- 根据敌人类型应用目标过滤
+- 通过外部音频播放器播放相应的音效
 
-An external audio player (HitKillSoundsPlayer) handles sound playback via HTTP requests, allowing for multi-channel audio support (separate channels for hit and kill sounds).
+外部音频播放器 (HitKillSoundsPlayer) 通过 HTTP 请求处理音效播放，支持多通道音频（命中和击杀音效使用独立通道）。
 
-## Installation
+## 安装方法
 
-1. Download the mod and place it in your Darktide mods folder
-2. Enable the mod in the game's mod menu
-3. Configure your preferred sound source and volume in the mod settings
+1. 下载 MOD 并将其放入暗潮的 MOD 文件夹中
+2. 在游戏的 MOD 菜单中启用该 MOD
+3. 在 MOD 设置中配置你喜欢的音效来源和音量
 
-## Requirements
+## 系统要求
 
-- Darktide with mod support enabled
-- HitKillSoundsPlayer (bundled with this mod)
+- 已启用 MOD 支持的暗潮 (Darktide)
+- HitKillSoundsPlayer（随本 MOD 一起提供）
 
-## Sound Sources
+## 音效来源
 
-All hit and kill sounds are from their respective games and are used for modding/educational purposes:
+所有命中和击杀音效均来自各自的游戏，仅用于 MOD 制作/教育目的：
 
-- Battlefield series sounds from EA/DICE games
-- Call of Duty series sounds from Activision
-- The Finals sounds from Embark Studios
+- 战地系列音效来自 EA/DICE 游戏
+- 使命召唤系列音效来自动视
+- 糖豆人音效来自 Embark Studios
 
-## Acknowledgments
+## 致谢
 
-- **B站 UP 主 EBuyToDeep** ([https://space.bilibili.com/1273948298](https://space.bilibili.com/1273948298)): For providing the external audio player solution that made this mod possible. The HitKillSoundsPlayer application is based on the concept from their EBuyToDeep_KillFeedBack mod.
+- **B站 UP 主 EBuyToDeep** ([https://space.bilibili.com/1273948298](https://space.bilibili.com/1273948298))：感谢他提供的外部音频播放器方案，使这个 MOD 成为可能。HitKillSoundsPlayer 应用程序的概念来源于他的 EBuyToDeep_KillFeedBack MOD。
 
-## License
+## 许可证
 
-This mod is provided for educational and personal use only. All sound files remain the property of their respective copyright holders.
+本 MOD 仅供教育和个人使用。所有音效文件版权归其各自版权持有人所有。
