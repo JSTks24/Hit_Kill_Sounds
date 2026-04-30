@@ -170,6 +170,50 @@ local HIT_SOUNDS = {
             "HitSounds/TheFinals/hitsound_TheFinals_headshot5.wav",
         },
     },
+    CODBOCW = {
+        normal = {
+            "HitSounds/CODBOCW/h_bocw_normal-01.wav",
+            "HitSounds/CODBOCW/h_bocw_normal-02.wav",
+            "HitSounds/CODBOCW/h_bocw_normal-03.wav",
+            "HitSounds/CODBOCW/hitsound_BOCW_normal.wav",
+        },
+        headshot = {
+            "HitSounds/CODBOCW/h_bocw_head-01.wav",
+            "HitSounds/CODBOCW/h_bocw_head-02.wav",
+            "HitSounds/CODBOCW/h_bocw_head-03.wav",
+            "HitSounds/CODBOCW/hitsound_BOCW_headshot.wav",
+        },
+    },
+    CODVG = {
+        normal = {
+            "HitSounds/CODVG/h_codvg_default_03.wav",
+            "HitSounds/CODVG/h_codvg_default_07.wav",
+            "HitSounds/CODVG/h_codvg_default_08.wav",
+            "HitSounds/CODVG/h_codvg_default_11.wav",
+            "HitSounds/CODVG/h_codvg_default_15.wav",
+            "HitSounds/CODVG/h_codvg_armor_01.wav",
+            "HitSounds/CODVG/h_codvg_armor_02.wav",
+            "HitSounds/CODVG/h_codvg_armor_03.wav",
+            "HitSounds/CODVG/h_codvg_armor_04.wav",
+            "HitSounds/CODVG/h_codvg_armor_05.wav",
+            "HitSounds/CODVG/h_codvg_armor_06.wav",
+            "HitSounds/CODVG/h_codvg_armor_07.wav",
+        },
+        headshot = {
+            "HitSounds/CODVG/h_codvg_headshot_01.wav",
+            "HitSounds/CODVG/h_codvg_headshot_02.wav",
+            "HitSounds/CODVG/h_codvg_headshot_13.wav",
+            "HitSounds/CODVG/h_codvg_headshot_14.wav",
+        },
+    },
+    Overwatch = {
+        normal = {
+            "HitSounds/Overwatch/hitsound_ow_normal.wav",
+        },
+        headshot = {
+            "HitSounds/Overwatch/hitsound_ow_headshot.wav",
+        },
+    },
 }
 
 local KILL_SOUNDS = {
@@ -278,10 +322,40 @@ local KILL_SOUNDS = {
             "KillSounds/TheFinals/killsound_TheFinals_headshot.wav",
         },
     },
+    CODBOCW = {
+        normal = {
+            "KillSounds/CODBOCW/k_bocw_normal.wav",
+            "KillSounds/CODBOCW/Killsound_BOCW.wav",
+        },
+        headshot = {
+            "KillSounds/CODBOCW/k_bocw_headshot-01.wav",
+            "KillSounds/CODBOCW/k_bocw_headshot-02.wav",
+            "KillSounds/CODBOCW/k_bocw_headshot-03.wav",
+        },
+    },
+    CODVG = {
+        normal = {
+            "KillSounds/CODVG/k_codvg_01.wav",
+            "KillSounds/CODVG/k_codvg_04.wav",
+            "KillSounds/CODVG/k_codvg_v4_01.wav",
+        },
+        headshot = {
+            "KillSounds/CODVG/k_codvg_headshot_01.wav",
+            "KillSounds/CODVG/k_codvg_headshot_metal_01.wav",
+        },
+    },
+    Overwatch = {
+        normal = {
+            "KillSounds/Overwatch/killsound_ow_normal.wav",
+            "KillSounds/Overwatch/killsound_ow2_normal.wav",
+        },
+        headshot = {
+            "KillSounds/Overwatch/killsound_ow_normal.wav",
+        },
+    },
 }
 
 -- 命中间隔控制（秒）
--- 射速过快的武器如果间隔太短会导致请求堆积或播放异常
 local HIT_COOLDOWN = 0.08
 local last_hit_time = 0
 
@@ -388,7 +462,7 @@ local function can_play_hit()
     return false
 end
 
--- 处理攻击结果的内部函数（供add_attack_result使用）
+-- 处理攻击结果的内部函数
 local function handle_attack_result(damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, is_critical_strike)
     -- 只处理有效伤害
     if not damage or damage <= 0 then
@@ -401,14 +475,11 @@ local function handle_attack_result(damage_profile, attacked_unit, attacking_uni
         return
     end
 
-    -- AttackReportManager传递的attacking_unit是attacking_unit_owner_unit（玩家unit）
-    -- 如果不等于本地玩家unit，则不处理
     if attacking_unit ~= local_player.player_unit then
         return
     end
 
-    -- DoT伤害类型检测（通过damage_profile名称判断）
-    -- AttackReportManager不传递damage_type，需要通过damage_profile名称来检测DoT
+    -- DoT伤害类型检测
     local is_dot_damage = false
     if damage_profile and damage_profile.name then
         local profile_name = damage_profile.name:lower()
@@ -431,27 +502,31 @@ local function handle_attack_result(damage_profile, attacked_unit, attacking_uni
             return
         end
 
-        -- 使用hit_weakspot参数判断是否是爆头击杀
         local is_kill_headshot = hit_weakspot == true
 
-        -- 检查目标类型是否有效
         local kill_target_setting = HKS:get("kill_target") or "all"
         if not is_target_valid(breed_or_nil, kill_target_setting) then
             return
         end
 
-        -- 播放击杀音效（所有类型：精英/特殊/怪物/小怪）
+        -- 播放击杀音效
         play_kill_sound(is_kill_headshot)
+
+        -- 显示击杀图标
+        if HKS:get("kill_icon_enabled") and HKS.HitKillIconManager then
+            HKS.HitKillIconManager.show_icon(is_kill_headshot)
+        end
+
         return
     end
 
-    -- 检查是否启用dot伤害命中音效
+    -- 检查dot命中音效开关
     local enable_dot_hit = HKS:get("hit_dot")
     if is_dot_damage and not enable_dot_hit then
         return
     end
 
-    -- 检查是否是有效命中结果
+    -- 检查是否有效命中结果
     local valid_results = {
         [AttackSettings.attack_results.damaged] = true,
         [AttackSettings.attack_results.toughness_absorbed] = true,
@@ -462,37 +537,29 @@ local function handle_attack_result(damage_profile, attacked_unit, attacking_uni
         return
     end
 
-    -- 检查是否启用近战命中音效
+    -- 检查近战命中音效开关
     local enable_melee_hit = HKS:get("hit_melee")
     if attack_type == "melee" and not enable_melee_hit then
         return
     end
 
-    -- 检查目标类型是否有效
+    -- 检查目标类型
     local hit_target_setting = HKS:get("hit_target") or "all"
     if not is_target_valid(breed_or_nil, hit_target_setting) then
         return
     end
 
-    -- hit_weakspot表示是否命中弱点
     local is_weakspot = hit_weakspot == true
 
-    -- 播放命中音效
     if can_play_hit() then
         play_hit_sound(is_weakspot)
     end
 end
 
--- 初始化Damage hook来实现精确命中检测
--- 使用AttackReportManager来捕获所有攻击事件
--- AttackReportManager在服务器端调用，也通过RPC在客户端调用
+-- 初始化Damage hook
 HKS.HitKillSoundsEvents.init_damage_hooks = function()
-    -- Hook add_attack_result: 在服务器/主机上调用，处理所有攻击
-    -- 客户端通过rpc_add_attack_result调用此方法
     HKS:hook(CLASS.AttackReportManager, "add_attack_result", function(func, self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, is_critical_strike, ...)
-        -- 调用原始函数
         func(self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, is_critical_strike, ...)
-
         handle_attack_result(damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, is_critical_strike)
     end)
 end
